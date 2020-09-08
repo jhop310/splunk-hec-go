@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -355,7 +356,11 @@ func (hec *Client) write(ctx context.Context, endpoint string, data []byte) erro
 
 	// TODO: find out the correct code
 	if response.Text != "Success" {
-		return response
+		res, err := json.Marshal(response)
+		if err != nil {
+			return err
+		}
+		return errors.New(string(res))
 	}
 
 	// Check for acknowledgement IDs and store them if provided
